@@ -12,6 +12,33 @@ let paginaIndicados = 1;
 let paginaIndicadores = 1;
 const itensPorPagina = 15;
 
+
+// Pega os elementos relevantes do formulário
+const selectTipo = document.getElementById("tipo");
+const formIndicado = document.getElementById("form-indicado");
+const formIndicador = document.getElementById("form-indicador");
+
+// Função que mostra/esconde campos conforme o tipo escolhido
+function atualizarCamposTipo() {
+  if (selectTipo.value === "indicado") {
+    formIndicado.style.display = "block";
+    formIndicador.style.display = "none";
+  } else if (selectTipo.value === "indicador") {
+    formIndicado.style.display = "none";
+    formIndicador.style.display = "block";
+  } else {
+    formIndicado.style.display = "none";
+    formIndicador.style.display = "none";
+  }
+}
+
+// Atualiza inicialmente ao carregar a página (caso tenha algo selecionado)
+atualizarCamposTipo();
+
+// Escuta mudança no select tipo
+selectTipo.addEventListener("change", atualizarCamposTipo);
+
+
 // Referências do Firebase
 const indicadosRef = ref(db, "indicados");
 const indicadoresRef = ref(db, "indicadores");
