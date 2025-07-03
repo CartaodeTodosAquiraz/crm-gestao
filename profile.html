@@ -138,7 +138,7 @@
       origem: document.getElementById("origem").value,
       consultor: document.getElementById("consultor").value,
       obs: document.getElementById("obs").value,
-      dataHora: document.getElementById("dataHora").value,
+      dataHora: new Date(document.getElementById("dataHora").value).toISOString(),
       gestor: document.getElementById("gestor").value,
       status: "novo",
       criadoEm: new Date().toISOString(),
