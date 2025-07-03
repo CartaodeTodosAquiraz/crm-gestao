@@ -64,7 +64,7 @@ onValue(indicadoresRef, snapshot => {
 function editar(i, tipo) {
   editandoIndex = i;
   editandoTipo = tipo;
-  document.getElementById("modal-edicao").style.display = "block";
+  document.getElementById("modal-edicao").style.display = "flex";
 
   if (tipo === "indicado") {
     const item = indicados[i];

@@ -11,6 +11,17 @@
   margin: 0;
   padding: 0;
 }
+
+nav svg {
+  width: 25px;
+  height: 25px;
+  transition: transform 0.2s ease;
+}
+
+nav svg:hover {
+  transform: scale(1.1);
+}
+
 html{
   font-family: Poppins, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.5rem;
@@ -146,6 +157,8 @@ main p{
   body{
     grid-template-columns: 1fr;
   }
+
+  
   main{
     padding: 2em 1em 60px 1em;
   }
@@ -164,22 +177,23 @@ main p{
     bottom: 0;
 
     > ul{
-      padding: 0;
-      display: grid;
-      grid-auto-columns: 60px;
-      grid-auto-flow: column;
-      align-items: center;
-      overflow-x: scroll;
+        padding: 0;
+        display: flex;
+        justify-content: space-around; /* distribui igualmente */
+        align-items: center;
+        overflow-x: auto;
     }
     ul li{
       height: 100%;
     }
     ul a, ul .dropdown-btn{
-      width: 60px;
-      height: 60px;
-      padding: 0;
-      border-radius: 0;
-      justify-content: center;
+        width: 100%;
+        height: 60px;
+        padding: 0;
+        border-radius: 0;
+        justify-content: center;
+        display: flex;
+        align-items: center;
     }
 
     ul li span, ul li:first-child, .dropdown-btn svg:last-child{
