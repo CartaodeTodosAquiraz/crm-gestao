@@ -33,6 +33,69 @@ onValue(indicadoresRef, snapshot => {
   renderizarTabelas();
 });
 
+
+function editar(i, tipo) {
+  editandoIndex = i;
+  editandoTipo = tipo;
+  document.getElementById("modal-edicao").style.display = "block";
+
+  if (tipo === "indicado") {
+    const item = indicados[i];
+    document.getElementById("edit-nome").value = item.nome || "";
+    document.getElementById("edit-telefone").value = item.telefone || "";
+    document.getElementById("edit-indicador").value = item.indicador || "";
+    document.getElementById("edit-obs-indicado").value = item.obs || "";
+    document.getElementById("edit-consultor").value = item.consultor || "";
+    document.getElementById("edicao-indicado").style.display = "block";
+    document.getElementById("edicao-indicador").style.display = "none";
+  } else {
+    const item = indicadores[i];
+    document.getElementById("edit-filiado").value = item.filiado || "";
+    document.getElementById("edit-matricula").value = item.matricula || "";
+    document.getElementById("edit-obs-indicador").value = item.obs || "";
+    document.getElementById("edit-quantidade").value = item.quantidade || 0;
+    document.getElementById("edit-tratativa").value = item.tratativa || "";
+    document.getElementById("edicao-indicador").style.display = "block";
+    document.getElementById("edicao-indicado").style.display = "none";
+  }
+}
+
+document.getElementById("form-editar").addEventListener("submit", e => {
+  e.preventDefault();
+
+  if (editandoTipo === "indicado") {
+    const item = indicados[editandoIndex];
+    const id = item._id;
+    const dadosAtualizados = {
+      nome: document.getElementById("edit-nome").value,
+      telefone: document.getElementById("edit-telefone").value,
+      indicador: document.getElementById("edit-indicador").value,
+      obs: document.getElementById("edit-obs-indicado").value,
+      consultor: document.getElementById("edit-consultor").value,
+    };
+    update(ref(db, `indicados/${id}`), dadosAtualizados);
+  } else if (editandoTipo === "indicador") {
+    const item = indicadores[editandoIndex];
+    const id = item._id;
+    const dadosAtualizados = {
+      filiado: document.getElementById("edit-filiado").value,
+      matricula: document.getElementById("edit-matricula").value,
+      obs: document.getElementById("edit-obs-indicador").value,
+      quantidade: parseInt(document.getElementById("edit-quantidade").value),
+      tratativa: document.getElementById("edit-tratativa").value,
+    };
+    update(ref(db, `indicadores/${id}`), dadosAtualizados);
+  }
+
+  fecharModal();
+});
+
+function fecharModal() {
+  document.getElementById("modal-edicao").style.display = "none";
+  editandoIndex = null;
+  editandoTipo = null;
+}
+
 function atualizarMetricas() {
   const hoje = new Date().toISOString().split("T")[0];
   const ontem = new Date(Date.now() - 86400000).toISOString().split("T")[0];
