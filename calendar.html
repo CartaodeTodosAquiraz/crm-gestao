@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendar</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="text/javascript" src="app.js" defer></script>
+  <script type="module" src="firebase-init.js"></script>
+
+</head>
+<body>
+  <nav id="sidebar">
+    <ul>
+      <li>
+        <span class="logo">CRM Gestão</span>
+        <button onclick=toggleSidebar() id="toggle-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m313-480 155 156q11 11 11.5 27.5T468-268q-11 11-28 11t-28-11L228-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l184-184q11-11 27.5-11.5T468-692q11 11 11 28t-11 28L313-480Zm264 0 155 156q11 11 11.5 27.5T732-268q-11 11-28 11t-28-11L492-452q-6-6-8.5-13t-2.5-15q0-8 2.5-15t8.5-13l184-184q11-11 27.5-11.5T732-692q11 11 11 28t-11 28L577-480Z"/></svg>
+        </button>
+      </li>
+      <li>
+        <a href="index.html">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M240-200h120v-200q0-17 11.5-28.5T400-440h160q17 0 28.5 11.5T600-400v200h120v-360L480-740 240-560v360Zm-80 0v-360q0-19 8.5-36t23.5-28l240-180q21-16 48-16t48 16l240 180q15 11 23.5 28t8.5 36v360q0 33-23.5 56.5T720-120H560q-17 0-28.5-11.5T520-160v-200h-80v200q0 17-11.5 28.5T400-120H240q-33 0-56.5-23.5T160-200Zm320-270Z"/></svg>
+          <span>Gestão</span>
+        </a>
+      </li>
+      <li>
+        <a href="dashboard.html">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M520-640v-160q0-17 11.5-28.5T560-840h240q17 0 28.5 11.5T840-800v160q0 17-11.5 28.5T800-600H560q-17 0-28.5-11.5T520-640ZM120-480v-320q0-17 11.5-28.5T160-840h240q17 0 28.5 11.5T440-800v320q0 17-11.5 28.5T400-440H160q-17 0-28.5-11.5T120-480Zm400 320v-320q0-17 11.5-28.5T560-520h240q17 0 28.5 11.5T840-480v320q0 17-11.5 28.5T800-120H560q-17 0-28.5-11.5T520-160Zm-400 0v-160q0-17 11.5-28.5T160-360h240q17 0 28.5 11.5T440-320v160q0 17-11.5 28.5T400-120H160q-17 0-28.5-11.5T120-160Zm80-360h160v-240H200v240Zm400 320h160v-240H600v240Zm0-480h160v-80H600v80ZM200-200h160v-80H200v80Zm160-320Zm240-160Zm0 240ZM360-280Z"/></svg>
+          <span>Trafego Organico</span>
+        </a>
+      </li>
+      <li class="active">
+        <a href="calendar.html">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-80q-33 0-56.5-23.5T120-160v-560q0-33 23.5-56.5T200-800h40v-40q0-17 11.5-28.5T280-880q17 0 28.5 11.5T320-840v40h320v-40q0-17 11.5-28.5T680-880q17 0 28.5 11.5T720-840v40h40q33 0 56.5 23.5T840-720v560q0 33-23.5 56.5T760-80H200Zm0-80h560v-400H200v400Zm0-480h560v-80H200v80Zm0 0v-80 80Zm280 240q-17 0-28.5-11.5T440-440q0-17 11.5-28.5T480-480q17 0 28.5 11.5T520-440q0 17-11.5 28.5T480-400Zm-160 0q-17 0-28.5-11.5T280-440q0-17 11.5-28.5T320-480q17 0 28.5 11.5T360-440q0 17-11.5 28.5T320-400Zm320 0q-17 0-28.5-11.5T600-440q0-17 11.5-28.5T640-480q17 0 28.5 11.5T680-440q0 17-11.5 28.5T640-400ZM480-240q-17 0-28.5-11.5T440-280q0-17 11.5-28.5T480-320q17 0 28.5 11.5T520-280q0 17-11.5 28.5T480-240Zm-160 0q-17 0-28.5-11.5T280-280q0-17 11.5-28.5T320-320q17 0 28.5 11.5T360-280q0 17-11.5 28.5T320-240Zm320 0q-17 0-28.5-11.5T600-280q0-17 11.5-28.5T640-320q17 0 28.5 11.5T680-280q0 17-11.5 28.5T640-240Z"/></svg>
+          <span>Metricas dos Lead</span>
+        </a>
+      </li>
+      <li>
+        <a href="profile.html">
+          <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-240v-32q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v32q0 33-23.5 56.5T720-160H240q-33 0-56.5-23.5T160-240Zm80 0h480v-32q0-11-5.5-20T700-306q-54-27-109-40.5T480-360q-56 0-111 13.5T260-306q-9 5-14.5 14t-5.5 20v32Zm240-320q33 0 56.5-23.5T560-640q0-33-23.5-56.5T480-720q-33 0-56.5 23.5T400-640q0 33 23.5 56.5T480-560Zm0-80Zm0 400Z"/></svg>
+          <span>Adicionar Lead</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+<main>
+
+<style>
+  main {
+    padding: 20px;
+    max-width: 1200px;
+    margin: auto;
+  }
+
+  main .container {
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
+    color: #f1f1f1;
+  }
+
+  main h2 {
+    font-size: 28px;
+    color: #00d997;
+    margin-bottom: 20px;
+  }
+
+  main .metricas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+
+  main .card {
+    background: #2a2a2a;
+    padding: 16px;
+    border-radius: 10px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+  }
+
+  main .card h3 {
+    margin-top: 0;
+    color: #4caf50;
+    font-size: 18px;
+  }
+
+  main .card p {
+    font-size: 16px;
+    margin: 5px 0;
+  }
+
+  main canvas {
+    background: #1e1e1e;
+    border-radius: 12px;
+    padding: 10px;
+  }
+
+  main ul {
+    list-style: none;
+    padding-left: 0;
+  }
+
+  main ul li {
+    background: #333;
+    padding: 8px;
+    border-radius: 6px;
+    margin-bottom: 5px;
+    color: #ddd;
+  }
+
+  main .input-group {
+    margin-top: 20px;
+  }
+
+  main .input-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 6px;
+  }
+
+  main .input-group input {
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    border: none;
+    background: #333;
+    color: #fff;
+  }
+
+  @media (max-width: 600px) {
+    main .card h3 {
+      font-size: 16px;
+    }
+
+    main .card p {
+      font-size: 14px;
+    }
+  }
+</style>
+
+
+  <div class="container" style="padding: 2rem; max-width: 1200px; margin: auto;">
+    <h2>Métricas de Leads</h2>
+
+    <section class="metricas-dia">
+      <h3>Resumo Diário</h3>
+      <ul>
+        <li>📅 Leads Hoje: <span id="leads-hoje">0</span></li>
+        <li>📆 Leads Ontem: <span id="leads-ontem">0</span></li>
+        <li>📉 Leads Anteontem: <span id="leads-anteontem">0</span></li>
+      </ul>
+    </section>
+
+    <section class="metricas-vendas">
+      <h3>Vendas por Consultor</h3>
+      <ul id="vendas-consultor"></ul>
+    </section>
+
+    <section class="metricas-gerais">
+      <h3>Totais</h3>
+      <ul>
+        <li>📋 Total de Leads: <span id="total-leads">0</span></li>
+        <li>✅ Total de Vendas: <span id="total-vendas">0</span></li>
+        <li>📈 Taxa de Conversão Geral: <span id="taxa-conversao">0%</span></li>
+        <li>📊 Total de Leads Davi: <span id="total-davi-leads">0</span></li>
+        <li>📊 Total de Leads Claudemir: <span id="total-claudemir-leads">0</span></li>
+        <li>📊 Taxa de Conversão Davi: <span id="taxa-davi">0%</span></li>
+        <li>📊 Taxa de Conversão Claudemir: <span id="taxa-claudemir">0%</span></li>
+      </ul>
+    </section>
+
+    <section class="investimento">
+      <h3>Investimento</h3>
+      <label for="valor-gasto">💸 Valor Gasto (R$):</label>
+      <input type="number" id="valor-gasto" placeholder="Digite o valor..." step="0.01">
+      <button onclick="calcularCustos()">Calcular</button>
+
+      <ul>
+        <li>💰 Custo por Lead: <span id="custo-lead">R$ 0,00</span></li>
+        <li>💵 Custo por Venda: <span id="custo-venda">R$ 0,00</span></li>
+      </ul>
+    </section>
+
+    <section>
+      <h3>Gráfico por Status</h3>
+      <canvas id="grafico-status" style="max-width: 100%; height: 400px;"></canvas>
+    </section>
+  </div>
+</main>
+
+<!-- Chart.js continua igual -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- Novo script: usa Firebase em vez de localStorage -->
+<script type="module">
+  /* IMPORTA a instância já configurada em firebase-init.js */
+  import { db, ref, onValue } from './firebase-init.js';
+
+  let leads = [];
+
+  /* Escuta em tempo real */
+  const leadsRef = ref(db, 'leads');
+  onValue(leadsRef, snap => {
+    leads = [];
+    snap.forEach(c => leads.push(c.val()));   // guarda cada lead
+    gerarMetricas();                          // atualiza as métricas ao vivo
+  });
+
+  /* === FUNÇÕES AUXILIARES === */
+  function contarPorData(offset) {
+    const alvo = new Date(Date.now() - offset * 864e5).toISOString().split('T')[0];
+    return leads.filter(l => (l.dataHora || '').startsWith(alvo)).length;
+  }
+
+  function gerarMetricas() {
+    /* Resumo diário */
+    document.getElementById('leads-hoje').textContent      = contarPorData(0);
+    document.getElementById('leads-ontem').textContent     = contarPorData(1);
+    document.getElementById('leads-anteontem').textContent = contarPorData(2);
+
+    /* Totais e conversões */
+    const totalLeads  = leads.length;
+    let totalVendas   = 0;
+    const vendasPor   = {};
+    let daviLeads=0,   daviVendas=0;
+    let claudLeads=0,  claudVendas=0;
+    const statusCnt   = {};
+
+    leads.forEach(l => {
+      const status = (l.status || '').toLowerCase();
+      statusCnt[status] = (statusCnt[status] || 0) + 1;
+
+      if (status === 'vendas' || status === 'fechado') {
+        totalVendas++;
+        const nome = l.consultor || 'Desconhecido';
+        vendasPor[nome] = (vendasPor[nome] || 0) + 1;
+      }
+
+      if ((l.gestor || '').toLowerCase().includes('davi')) {
+        daviLeads++;
+        if (status === 'vendas' || status === 'fechado') daviVendas++;
+      }
+
+      if ((l.gestor || '').toLowerCase().includes('claudemir')) {
+        claudLeads++;
+        if (status === 'vendas' || status === 'fechado') claudVendas++;
+      }
+    });
+
+    document.getElementById('total-leads').textContent            = totalLeads;
+    document.getElementById('total-vendas').textContent           = totalVendas;
+    document.getElementById('total-davi-leads').textContent       = daviLeads;
+    document.getElementById('total-claudemir-leads').textContent  = claudLeads;
+
+    document.getElementById('taxa-conversao').textContent = totalLeads
+      ? ((totalVendas / totalLeads) * 100).toFixed(1) + '%'
+      : '0%';
+    document.getElementById('taxa-davi').textContent = daviLeads
+      ? ((daviVendas / daviLeads) * 100).toFixed(1) + '%'
+      : '0%';
+    document.getElementById('taxa-claudemir').textContent = claudLeads
+      ? ((claudVendas / claudLeads) * 100).toFixed(1) + '%'
+      : '0%';
+
+    /* Lista de vendas por consultor */
+    document.getElementById('vendas-consultor').innerHTML =
+      Object.entries(vendasPor)
+        .map(([nome, qtd]) => `<li>👤 ${nome}: ${qtd} vendas</li>`)
+        .join('');
+
+    /* Renderiza gráfico */
+    gerarGrafico(statusCnt);
+  }
+
+  function calcularCustos() {
+    const valor = parseFloat(document.getElementById('valor-gasto').value);
+    const leadsCount  = leads.length;
+    const vendasCount = leads.filter(l => ['vendas','fechado'].includes((l.status||'').toLowerCase())).length;
+
+    document.getElementById('custo-lead').textContent  =
+      valor && leadsCount  ? `R$ ${(valor / leadsCount ).toFixed(2)}` : 'R$ 0,00';
+    document.getElementById('custo-venda').textContent =
+      valor && vendasCount ? `R$ ${(valor / vendasCount).toFixed(2)}` : 'R$ 0,00';
+  }
+
+  /* Desenha/atualiza o gráfico de barras por status */
+  function gerarGrafico(statuses) {
+    const ctx = document.getElementById('grafico-status').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: Object.keys(statuses),
+        datasets: [{
+          label: 'Leads por Status',
+          data:  Object.values(statuses),
+          backgroundColor: ['#2c7be5','#00d97e','#e63757','#fd7e14','#6c757d','#5c60f5','#20c997']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false } }
+      }
+    });
+  }
+
+  /* Se quiser disparar cálculo de custos manualmente */
+  window.calcularCustos = calcularCustos;
+</script>
+</body>
+</html>
