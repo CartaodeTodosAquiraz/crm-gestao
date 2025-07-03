@@ -135,7 +135,7 @@ function atualizarMetricas() {
     "Refuturiza": 0,
     "Filiado com aplicativo baixado": 0,
     "Matriculas endereço divergente do cadastro": 0,
-    "Carteiras que ja havia sido pagas e enviado o comprovante para o consultor e ainda nao tinha sido entregues": 0,
+    "Carteiras pagas porem não entregue": 0,
     "Agendamentos de odontologia": 0,
     "Agendamentos de Consultas": 0,
     "Inclusão de dependentes": 0,
@@ -155,7 +155,7 @@ function atualizarMetricas() {
   document.getElementById("refuturiza").textContent = contagem["Refuturiza"];
   document.getElementById("app").textContent = contagem["Filiado com aplicativo baixado"];
   document.getElementById("endereco").textContent = contagem["Matriculas endereço divergente do cadastro"];
-  document.getElementById("comprovante").textContent = contagem["Carteiras que ja havia sido pagas e enviado o comprovante para o consultor e ainda nao tinha sido entregues"];
+  document.getElementById("comprovante").textContent = contagem["Carteiras pagas porem não entregue"];
 
   document.getElementById("vendas").textContent = indicados.filter(i => i.vendaFechada).length;
   atualizarTabelaVendas();
@@ -216,6 +216,8 @@ function renderizarTabelas() {
   });
 
   atualizarMetricas();
+  paginacao("indicados");
+  paginacao("indicadores");
 }
 
 function excluir(id, tipo) {
@@ -251,6 +253,53 @@ document.getElementById("form-organico").addEventListener("submit", e => {
 
   e.target.reset();
 });
+
+function paginacao(tipo) {
+  let total, paginaAtual, divPaginacao;
+
+  if (tipo === "indicados") {
+    total = Math.ceil(indicados.length / itensPorPagina);
+    paginaAtual = paginaIndicados;
+    divPaginacao = document.getElementById("indicados-paginacao");
+  } else {
+    total = Math.ceil(indicadores.length / itensPorPagina);
+    paginaAtual = paginaIndicadores;
+    divPaginacao = document.getElementById("indicadores-paginacao");
+  }
+
+  divPaginacao.innerHTML = "";
+
+  if (total <= 1) return;
+
+  if (paginaAtual > 1) {
+    const btnPrev = document.createElement("button");
+    btnPrev.textContent = "◀️";
+    btnPrev.onclick = () => {
+      if (tipo === "indicados") paginaIndicados--;
+      else paginaIndicadores--;
+      renderizarTabelas();
+    };
+    divPaginacao.appendChild(btnPrev);
+  }
+
+  const span = document.createElement("span");
+  span.style.color = "#fff";
+  span.style.margin = "0 10px";
+  span.textContent = `Página ${paginaAtual} de ${total}`;
+  divPaginacao.appendChild(span);
+
+  if (paginaAtual < total) {
+    const btnNext = document.createElement("button");
+    btnNext.textContent = "▶️";
+    btnNext.onclick = () => {
+      if (tipo === "indicados") paginaIndicados++;
+      else paginaIndicadores++;
+      renderizarTabelas();
+    };
+    divPaginacao.appendChild(btnNext);
+  }
+}
+
 
 window.editar = editar;
 window.excluir = excluir;
