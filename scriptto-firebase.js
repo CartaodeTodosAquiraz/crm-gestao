@@ -224,3 +224,8 @@ document.getElementById("form-organico").addEventListener("submit", e => {
 
   e.target.reset();
 });
+
+window.editar = editar;
+window.excluir = excluir;
+window.fecharModal = fecharModal;
+
