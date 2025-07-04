@@ -198,38 +198,45 @@
 
 <!-- Novo script: usa Firebase em vez de localStorage -->
 <script type="module">
-  /* IMPORTA a instância já configurada em firebase-init.js */
   import { db, ref, onValue } from './firebase-init.js';
 
   let leads = [];
 
-  /* Escuta em tempo real */
   const leadsRef = ref(db, 'leads');
   onValue(leadsRef, snap => {
     leads = [];
-    snap.forEach(c => leads.push(c.val()));   // guarda cada lead
-    gerarMetricas();                          // atualiza as métricas ao vivo
+    snap.forEach(c => {
+      const lead = c.val();
+      lead._id = c.key;
+      leads.push(lead);
+    });
+
+    console.log(`✅ Leads carregados: ${leads.length}`);
+    gerarMetricas();
   });
 
-  /* === FUNÇÕES AUXILIARES === */
   function contarPorData(offset) {
     const alvo = new Date(Date.now() - offset * 864e5).toISOString().split('T')[0];
-    return leads.filter(l => (l.dataHora || '').startsWith(alvo)).length;
+
+    return leads.filter(l => {
+      if (!l.dataHora) return false;
+      const data = new Date(l.dataHora);
+      if (isNaN(data.getTime())) return false;
+      return data.toISOString().startsWith(alvo);
+    }).length;
   }
 
   function gerarMetricas() {
-    /* Resumo diário */
     document.getElementById('leads-hoje').textContent      = contarPorData(0);
     document.getElementById('leads-ontem').textContent     = contarPorData(1);
     document.getElementById('leads-anteontem').textContent = contarPorData(2);
 
-    /* Totais e conversões */
-    const totalLeads  = leads.length;
-    let totalVendas   = 0;
-    const vendasPor   = {};
-    let daviLeads=0,   daviVendas=0;
-    let claudLeads=0,  claudVendas=0;
-    const statusCnt   = {};
+    const totalLeads = leads.length;
+    let totalVendas = 0;
+    const vendasPor = {};
+    let daviLeads = 0, daviVendas = 0;
+    let claudLeads = 0, claudVendas = 0;
+    const statusCnt = {};
 
     leads.forEach(l => {
       const status = (l.status || '').toLowerCase();
@@ -252,10 +259,10 @@
       }
     });
 
-    document.getElementById('total-leads').textContent            = totalLeads;
-    document.getElementById('total-vendas').textContent           = totalVendas;
-    document.getElementById('total-davi-leads').textContent       = daviLeads;
-    document.getElementById('total-claudemir-leads').textContent  = claudLeads;
+    document.getElementById('total-leads').textContent = totalLeads;
+    document.getElementById('total-vendas').textContent = totalVendas;
+    document.getElementById('total-davi-leads').textContent = daviLeads;
+    document.getElementById('total-claudemir-leads').textContent = claudLeads;
 
     document.getElementById('taxa-conversao').textContent = totalLeads
       ? ((totalVendas / totalLeads) * 100).toFixed(1) + '%'
@@ -267,28 +274,27 @@
       ? ((claudVendas / claudLeads) * 100).toFixed(1) + '%'
       : '0%';
 
-    /* Lista de vendas por consultor */
     document.getElementById('vendas-consultor').innerHTML =
       Object.entries(vendasPor)
         .map(([nome, qtd]) => `<li>👤 ${nome}: ${qtd} vendas</li>`)
         .join('');
 
-    /* Renderiza gráfico */
     gerarGrafico(statusCnt);
   }
 
   function calcularCustos() {
     const valor = parseFloat(document.getElementById('valor-gasto').value);
-    const leadsCount  = leads.length;
-    const vendasCount = leads.filter(l => ['vendas','fechado'].includes((l.status||'').toLowerCase())).length;
+    const leadsCount = leads.length;
+    const vendasCount = leads.filter(l =>
+      ['vendas', 'fechado'].includes((l.status || '').toLowerCase())
+    ).length;
 
-    document.getElementById('custo-lead').textContent  =
-      valor && leadsCount  ? `R$ ${(valor / leadsCount ).toFixed(2)}` : 'R$ 0,00';
+    document.getElementById('custo-lead').textContent =
+      valor && leadsCount ? `R$ ${(valor / leadsCount).toFixed(2)}` : 'R$ 0,00';
     document.getElementById('custo-venda').textContent =
       valor && vendasCount ? `R$ ${(valor / vendasCount).toFixed(2)}` : 'R$ 0,00';
   }
 
-  /* Desenha/atualiza o gráfico de barras por status */
   function gerarGrafico(statuses) {
     const ctx = document.getElementById('grafico-status').getContext('2d');
     new Chart(ctx, {
@@ -297,8 +303,8 @@
         labels: Object.keys(statuses),
         datasets: [{
           label: 'Leads por Status',
-          data:  Object.values(statuses),
-          backgroundColor: ['#2c7be5','#00d97e','#e63757','#fd7e14','#6c757d','#5c60f5','#20c997']
+          data: Object.values(statuses),
+          backgroundColor: ['#2c7be5', '#00d97e', '#e63757', '#fd7e14', '#6c757d', '#5c60f5', '#20c997']
         }]
       },
       options: {
@@ -308,8 +314,17 @@
     });
   }
 
-  /* Se quiser disparar cálculo de custos manualmente */
   window.calcularCustos = calcularCustos;
+
+  window.verLeads = () => {
+    console.table(leads.map(l => ({
+      nome: l.nome,
+      dataHora: l.dataHora,
+      status: l.status,
+      gestor: l.gestor,
+      consultor: l.consultor
+    })));
+  };
 </script>
 </body>
 </html>

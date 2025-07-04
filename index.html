@@ -5,10 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Gestao</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="estilo.css" />
   <script type="text/javascript" src="app.js" defer></script>
-  <script src="script.js"></script>
-  <script type="module" src="firebase-init.js"></script>
+<!-- Em vez de usar modules, use o Firebase v8 com script tradicional -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>
+  // Configuração Firebase
+  const firebaseConfig = {
+    apiKey: "AIzaSyB7g9-nOIriHTnvqw7Ng-Vz73YgJ5gBcT4",
+    authDomain: "crm-gestao-e9ae1.firebaseapp.com",
+    databaseURL: "https://crm-gestao-e9ae1-default-rtdb.firebaseio.com",
+    projectId: "crm-gestao-e9ae1",
+    storageBucket: "crm-gestao-e9ae1.appspot.com",
+    messagingSenderId: "14732052302",
+    appId: "1:14732052302:web:ad1d394d8e26d745d9c01f"
+  };
+
+  // Inicializa Firebase
+  firebase.initializeApp(firebaseConfig);
+</script>
+
+
 </head>
 <body>
   <nav id="sidebar">
@@ -108,6 +125,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow-y: auto;
     color: #fff;
   }
   .lead-stats {
@@ -122,6 +140,7 @@
     flex-wrap: wrap;
     justify-content: center;
     width: 100%;
+    overflow-x: auto;
   }
   .column {
     background: #202124;
@@ -201,8 +220,8 @@
 }
 .lead-list {
   min-height: 150px;
-  max-height: 70vh;         /* altura máxima para scroll */
-  overflow-y: auto;         /* ativa scroll vertical */
+  max-height: 400px;
+  overflow-y: auto;
   padding: 5px;
   display: flex;
   flex-direction: column;
@@ -218,6 +237,8 @@
 .lead-list::-webkit-scrollbar-thumb:hover {
   background-color: #555;
 }
+
+
 
 
 /* Estilos adicionais para responsividade */
@@ -243,148 +264,7 @@
 
 </style>
 
-<!-- --------------- CRM Kanban: Firebase --------------- -->
-<script type="module">
-  /* Importa funções do Firebase configuradas em firebase-init.js */
-  import { db, ref, onValue, update, remove } from './firebase-init.js';
-
-  // Estado em memória
-  let leads = [];
-  let draggedId = null;
-
-  /* 1. Escuta em tempo real ================================================= */
-  const leadsRef = ref(db, 'leads');
-  onValue(leadsRef, snap => {
-    leads = [];
-    snap.forEach(c => leads.push({ _id: c.key, ...c.val() })); // guarda id
-    renderBoard();                                            // redesenha
-  });
-
-  /* 2. Modal de edição ====================================================== */
-  function abrirModal(card) {
-    const id   = card.dataset.id;
-    const lead = leads.find(l => l._id === id);
-    if (!lead) return;
-
-    document.getElementById('editNome').value        = lead.nome        || '';
-    document.getElementById('editTelefone').value    = lead.telefone    || '';
-    document.getElementById('editObs').value         = lead.obs         || '';
-    document.getElementById('editProximaAcao').value = lead.proximaAcao || '';
-    document.getElementById('editTipoAcao').value    = lead.tipoAcao    || 'Mensagem';
-
-    document.getElementById('leadModal').dataset.id  = id;
-    document.getElementById('leadModal').style.display = 'flex';
-  }
-
-  function fecharModal() {
-    document.getElementById('leadModal').style.display = 'none';
-  }
-
-  function salvarEdicao() {
-    const id = document.getElementById('leadModal').dataset.id;
-    if (!id) return;
-
-    const data = {
-      nome:        document.getElementById('editNome').value,
-      telefone:    document.getElementById('editTelefone').value,
-      obs:         document.getElementById('editObs').value,
-      proximaAcao: document.getElementById('editProximaAcao').value,
-      tipoAcao:    document.getElementById('editTipoAcao').value
-    };
-
-    update(ref(db, `leads/${id}`), data)
-      .then(() => { alert('✅ Lead atualizado com sucesso!'); fecharModal(); })
-      .catch(err  => { console.error(err); alert('❌ Erro ao atualizar o lead!'); });
-  }
-
-  /* 3. Exclusão ============================================================= */
-  function deletarLead(id) {
-    if (confirm('Deseja apagar este lead?')) {
-      remove(ref(db, `leads/${id}`));
-    }
-  }
-
-  /* 4. Drag‑and‑drop: mudança de status ==================================== */
-  function drop(e) {
-    e.preventDefault();
-    const newStatus = e.currentTarget.closest('.column').dataset.status;
-    if (draggedId) {
-      update(ref(db, `leads/${draggedId}`), { status: newStatus });
-      draggedId = null;
-    }
-  }
-
-  /* 5. Renderização do quadro ============================================== */
-  function renderBoard() {
-    // Limpa todas as colunas
-    document.querySelectorAll('.lead-list').forEach(list => list.innerHTML = '');
-
-    const hoje  = new Date().toISOString().split('T')[0];
-    const ontem = new Date(Date.now() - 864e5).toISOString().split('T')[0];
-    let countHoje = 0, countOntem = 0;
-
-    leads.forEach(lead => {
-      const card = document.createElement('div');
-      card.className   = 'lead';
-      card.draggable   = true;
-      card.dataset.id  = lead._id;
-
-      card.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <strong>${lead.nome}</strong>
-          <span class="delete-btn" title="Excluir Lead">🗑️</span>
-        </div>
-        📞 ${lead.telefone}<br>
-        📌 Origem: ${lead.origem}<br>
-        👤 Consultor: ${lead.consultor}<br>
-        🧑‍💼 Gestor: ${lead.gestor}<br>
-        🕐 Entrada: ${lead.dataHora ? new Date(lead.dataHora).toLocaleString() : '-'}<br>
-        📝 ${lead.obs || 'Sem observações'}<br>
-        🔁 Próx. ação: ${
-          lead.proximaAcao
-            ? `${lead.tipoAcao} em ${new Date(lead.proximaAcao).toLocaleString()}`
-            : 'Não definida'
-        }
-      `;
-
-      /* drag start */
-      card.addEventListener('dragstart', e => {
-        draggedId = lead._id;
-        e.dataTransfer.setData('text/plain', draggedId);
-        e.dataTransfer.effectAllowed = 'move';
-      });
-
-      /* clique: editar ou excluir */
-      card.addEventListener('click', e => {
-        if (e.target.classList.contains('delete-btn')) deletarLead(lead._id);
-        else abrirModal(card);
-      });
-
-      /* contadores de hoje/ontem */
-      const dataLead = (lead.dataHora || '').split('T')[0];
-      if (dataLead === hoje)  countHoje++;
-      if (dataLead === ontem) countOntem++;
-
-      /* adiciona à coluna correta */
-      const coluna = document.querySelector(`[data-status="${lead.status}"] .lead-list`);
-      if (coluna) coluna.appendChild(card);
-    });
-
-    /* Atualiza stats topo */
-    document.getElementById('leads-hoje').textContent  = countHoje;
-    document.getElementById('leads-ontem').textContent = countOntem;
-
-    /* Re‑anexa dragover/drop */
-    document.querySelectorAll('.lead-list').forEach(list => {
-      list.ondragover = e => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; };
-      list.ondrop     = drop;
-    });
-  }
-
-  /* 6. Expõe funções globais para o HTML inline ============================ */
-  window.fecharModal  = fecharModal;
-  window.salvarEdicao = salvarEdicao;
-</script>
+<script src="index-script.js"></script>
   </main>
 </body>
 </html>
